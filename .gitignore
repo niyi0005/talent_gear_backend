@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 
 # Ignore secret configuration files
-application.properties.secret
+application-secret.properties
 
 
 ### STS ###

@@ -25,7 +25,7 @@ public class Application {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User applicant;  // job seeker is a User with Role.JOB_SEEKER
+    private User applicant;  // User with Role.JOB_SEEKER
 
     private LocalDate applicationDate;
 

@@ -47,7 +47,7 @@ public class User {
     @OneToMany(mappedBy = "employer")
     private List<Job> postedJobs;
 
-    @OneToMany(mappedBy = "jobSeeker")
+    @OneToMany(mappedBy = "applicant")
     private List<Application> applications;
 
     //Enum for user roles
