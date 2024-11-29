@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Ignore secret configuration files
+application.properties.secret
+
+
 ### STS ###
 .apt_generated
 .classpath
