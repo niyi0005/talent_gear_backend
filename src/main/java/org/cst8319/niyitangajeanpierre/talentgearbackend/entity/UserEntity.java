@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name="users")
 
-public class User {
+public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -43,16 +43,26 @@ public class User {
     private String website;
     private LocalDateTime createdAt;
 
-
     @OneToMany(mappedBy = "employer")
-    private List<Job> postedJobs;
+    // JobEntity has a employer field that references UserEntity foreign key.
+    private List<JobEntity> postedJobs;
 
     @OneToMany(mappedBy = "applicant")
-    private List<Application> applications;
+    // ApplicationEntity has an applicant field that references UserEntity foreign key.
+    private List<ApplicationEntity> applications;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    // ResumeEntity has a user field that references UserEntity foreign key.
+    private ResumeEntity resume;
+
+    @OneToMany(mappedBy = "recipient")
+    private List<MessageEntity> receivedMessages;
+
+    @OneToMany(mappedBy = "sender")
+    private List<MessageEntity> sentMessages;
 
     //Enum for user roles
     public enum Role {
-        ADMIN,
         JOB_SEEKER,
         EMPLOYER
     }

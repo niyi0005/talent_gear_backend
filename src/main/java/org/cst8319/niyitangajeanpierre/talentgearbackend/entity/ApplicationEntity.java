@@ -14,18 +14,19 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="applications")
-public class Application {
+public class ApplicationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "job_id")
-    private Job job;
+    @JoinColumn(name = "jobId")
+    // References an id field in JobEntity
+    private JobEntity job;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User applicant;  // User with Role.JOB_SEEKER
+    @JoinColumn(name = "applicantId")
+    private UserEntity applicant;  // User with Role.JOB_SEEKER
 
     private LocalDate applicationDate;
 
