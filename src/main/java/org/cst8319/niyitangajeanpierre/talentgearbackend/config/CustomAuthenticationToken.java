@@ -12,10 +12,12 @@ public class CustomAuthenticationToken extends AbstractAuthenticationToken {
     private final Object credentials;
     private  Object details;
 
-    public CustomAuthenticationToken(Object principal, Object credentials) {
-        super(null);
+    // Constructor accepting principal, credentials, and authorities
+    public CustomAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
+        super(authorities);
         this.principal = principal;
         this.credentials = credentials;
+        setAuthenticated(true);
 
     }
 

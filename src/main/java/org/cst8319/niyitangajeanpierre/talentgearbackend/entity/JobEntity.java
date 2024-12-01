@@ -26,7 +26,7 @@ public class JobEntity {
     private Double salary;
 
     @ManyToOne
-    @JoinColumn(name = "employerId") // The employer who posted the job
+    @JoinColumn(name = "employer_id") // The employer who posted the job
     private UserEntity employer;
 
     @OneToMany(mappedBy = "job") // Refer to the 'job' field in ApplicationEntity

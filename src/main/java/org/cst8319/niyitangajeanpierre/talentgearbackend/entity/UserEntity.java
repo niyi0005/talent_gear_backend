@@ -7,16 +7,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="users")
+@Table(name = "users")
 
 public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +36,24 @@ public class UserEntity {
     @NotEmpty(message = "Password cannot be empty")
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private Set<RoleEntity> roles;
+
     @Lob
     private String bio;
-    private String resume_url; // URL or file path for the resume
+    @Column(name = "resume_url")
+    private String resumeUrl; // URL or file path for the resume
     private String address;
+    @Column(name = "phone_number")
     private String phoneNumber;
     private String website;
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "employer")
@@ -60,11 +73,5 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "sender")
     private List<MessageEntity> sentMessages;
-
-    //Enum for user roles
-    public enum Role {
-        JOB_SEEKER,
-        EMPLOYER
-    }
 
 }

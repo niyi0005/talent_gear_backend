@@ -50,14 +50,14 @@
         </dependency>
 
         <!--	Used to manage schema migration-->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-mysql</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-core</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-mysql</artifactId>-->
+<!--        </dependency>-->
 
 
 <!--        <dependency>-->
@@ -83,8 +83,9 @@
 
         <dependency>
         			<groupId>io.jsonwebtoken</groupId>
-        			<artifactId>jjwt</artifactId>
-        			<version>0.9.1</version>
+        			<artifactId>jjwt-api</artifactId>
+                      <version>0.11.5</version>
+
         		</dependency>
         		<dependency>
         			<groupId>io.jsonwebtoken</groupId>

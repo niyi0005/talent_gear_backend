@@ -7,33 +7,28 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="messages")
-public class MessageEntity {
+@Table(name = "roles")
+public class RoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    @Column(nullable=false)
-    private String content;
+    @Column(nullable = false, unique = true)  // Ensure role names are unique
+    private String name;
 
-    @ManyToOne
-    @JoinColumn (name="sender_id")
-    private UserEntity sender;
+    @ManyToMany(mappedBy = "roles")
+    private Set<UserEntity> users;
 
-    @ManyToOne
-    @JoinColumn(name="recipient_id")
-    private UserEntity recipient;
+    private String description;
 
-    @JoinColumn(name="sent_at")
-    private LocalDateTime sentAt;
-
-    private boolean isRead = false;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }

@@ -20,14 +20,15 @@ public class ApplicationEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "jobId")
+    @JoinColumn(name = "job_id")
     // References an id field in JobEntity
     private JobEntity job;
 
     @ManyToOne
-    @JoinColumn(name = "applicantId")
+    @JoinColumn(name = "applicant_id")
     private UserEntity applicant;  // User with Role.JOB_SEEKER
 
+    @JoinColumn(name = "application_date")
     private LocalDate applicationDate;
 
     @Enumerated(EnumType.STRING)

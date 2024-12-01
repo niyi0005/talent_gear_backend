@@ -1,39 +1,54 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.UserEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserLoginDto;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.config.CustomUserDetailsService;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.config.JwtUtil;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.UserRepository;
-import org.cst8319.niyitangajeanpierre.talentgearbackend.util.JwtUtil;
+//import org.cst8319.niyitangajeanpierre.talentgearbackend.config.JwtUtil;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.service.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping
 @RequiredArgsConstructor
+@Slf4j
 public class UserAuthenticationController {
 
     @Autowired
-    private JwtUtil jwtUtil;
-    private UserRepository userRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService userDetailsService;
+    private final UserAuthenticationService userAuthenticationService;
 
 
     // Login endpoint
-//    @PostMapping("/login")
-//    public String login(@RequestBody LoginRequest loginRequest) {
-//        UserEntity user = userRepository.findByUsername(loginRequest.getUsername());
-//
-//        // Check if user exists and password matches
-//        if (user != null && passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-//            return jwtUtil.generateToken(user);  // Generate and return JWT token
-//        } else {
-//            throw new RuntimeException("Invalid username or password");
-//        }
-//    }
+    @GetMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserLoginDto userLoginDto) {
+        log.info("Login attempt");
+        try {
+            String jwt = userAuthenticationService.authenticateUser(userLoginDto);
+
+            // Return a successful response with the JWT token
+            return ResponseEntity.ok().body(jwt);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(401).body("Invalid username or password");
+        }
+    }
 
     // Logout endpoint (client will discard the JWT token)
     @PostMapping("/logout")

@@ -1,50 +1,78 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.config;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.RoleEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.UserEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    @Autowired
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Fetch user from database by username
-        UserEntity userEntity = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByUsername(username);
 
-        if (userEntity == null) {
+        if (user == null) {
+            log.warn("User not found with username: {}", username);
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
+        log.info("User found: {} ", user);
 
-        return new org.springframework.security.core.userdetails.User(
-                userEntity.getUsername(),
-                userEntity.getPassword(),
-                getAuthorities(userEntity) // Set authorities/roles
-        );
+        // Initialize roles to avoid NullPointerException
+        Set<RoleEntity> roles = user.getRoles();
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+
+        // Fetch roles from database if not already loaded
+        if (roles.isEmpty()) {
+            user = userRepository.findById(user.getId()).orElseThrow();
+            roles = user.getRoles();
+        }
+
+        if (roles.isEmpty()) {
+            log.warn("Roles are empty for user: " + username);
+        } else {
+            log.info("Roles for user: " + username + " are: " + roles);
+        }
+
+        // Convert user roles to granted authorities
+        Set<GrantedAuthority> authorities = getAuthorities(roles);
+        log.info("Authorities: " + authorities);
+        return new User(user.getUsername(), user.getPassword(), authorities);
     }
 
-    // Example method to get authorities, assuming the user entity has roles or permissions
-    private Collection<SimpleGrantedAuthority> getAuthorities(UserEntity userEntity) {
+    // Method to get authorities (roles in our case)
+    private Set<GrantedAuthority> getAuthorities(Set<RoleEntity> roles) {
+        log.info("Retrieved roles in helper method: " + roles);
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toSet());
+    }
 
-        // Convert the Role enum to a "ROLE_" prefixed string for Spring Security
-        String roleName = "ROLE_" + userEntity.getRole().name(); // Convert to "ROLE_JOB_SEEKER" or "ROLE_EMPLOYER"
-
-        // Return a collection with the SimpleGrantedAuthority (role) for Spring Security
-        return Collections.singletonList(new SimpleGrantedAuthority(roleName));
+    // New method to create JwtAuthentication
+    public Authentication createJwtAuthentication(String username) {
+        UserDetails userDetails = loadUserByUsername(username);
+        return new JwtAuthentication(userDetails);
     }
 }

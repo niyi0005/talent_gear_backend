@@ -11,7 +11,7 @@ CREATE TABLE users (
                          username VARCHAR(255) UNIQUE NOT NULL,
                          email VARCHAR(255) UNIQUE NOT NULL,
                          password VARCHAR(255) NOT NULL,
-                         role ENUM('JOB_SEEKER', 'EMPLOYER') NOT NULL,
+                         roles ENUM('JOB_SEEKER', 'EMPLOYER') NOT NULL,
                          bio TEXT,
                          resumeUrl VARCHAR(255),
                          address VARCHAR(255),
@@ -74,7 +74,7 @@ CREATE INDEX idx_sender_id ON messages (senderId);
 CREATE INDEX idx_sentAt ON messages (sentAt);
 
 
-INSERT INTO users (username, email, password, role, bio, resumeUrl, address, phoneNumber, website, createdAt)
+INSERT INTO users (username, email, password, roles, bio, resumeUrl, address, phoneNumber, website, createdAt)
 VALUES
     ('johndoe', 'johndoe@example.com', 'password123', 'JOB_SEEKER', 'Experienced software developer with a passion for coding.', 'https://example.com/resumes/johndoe.pdf', '1234 Elm Street, SomeCity, SomeCountry', '555-1234', 'https://johndoeportfolio.com', NOW()),
     ('janedoe', 'janedoe@example.com', 'password456', 'JOB_SEEKER', 'Digital marketing specialist with 5+ years of experience.', 'https://example.com/resumes/janedoe.pdf', '5678 Oak Avenue, AnotherCity, AnotherCountry', '555-5678', 'https://janedoemarketing.com', NOW()),

@@ -1,29 +1,42 @@
-package org.cst8319.niyitangajeanpierre.talentgearbackend.util;
+package org.cst8319.niyitangajeanpierre.talentgearbackend.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.UserEntity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
 
-    private String secretKey = "mySecretKey"; // Secret key to sign JWTs
+//    private String secretKey = "mySecretKey"; // Secret key to sign JWTs
+    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     // Generate JWT token
-    public String generateToken(UserEntity user) {
+    public String generateToken(Authentication authentication) {
+        String username = authentication.getName();
+
+        // Extract roles from the authentication object
+        List<String> authorities = (authentication.getAuthorities() !=null) ?
+                authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)  // Convert to role names (e.g., "ROLE_JOB_SEEKER")
+                .collect(Collectors.toList())
+                : List.of();
+
         return Jwts.builder()
-                .setSubject(user.getUsername())  // Subject is the username (can also include other user details)
-                .claim("role", user.getRole().toString())  // Add role as a claim
+                .setSubject(username)  // Subject is the username (can also include other user details)
+                .claim("authorities", authorities)  // Add authorities as a claim
                 .setIssuedAt(new Date())  // Issue time
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // 10 hours expiration
-                .signWith(SignatureAlgorithm.HS256, secretKey)  // Signing the JWT token
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 ))  // One hour expiration
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)  // Signing the JWT token
                 .compact();
     }
 
@@ -32,7 +45,7 @@ public class JwtUtil {
         try {
             // Parse the JWT token
             Claims claims = Jwts.parser()
-                    .setSigningKey(secretKey)
+                    .setSigningKey(SECRET_KEY)
                     .parseClaimsJws(token)
                     .getBody();
 
@@ -71,7 +84,7 @@ public class JwtUtil {
     // Extract all claims from the token
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey)
+                .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
     }

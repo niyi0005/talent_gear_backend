@@ -22,11 +22,14 @@ public class ResumeEntity {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private UserEntity user;  // The resume belongs to one user
 
+    @Column(name = "file_name")
     private String fileName;  // File name of the resume (e.g., "resume.pdf")
+    @Column(name = "file_url")
     private String fileUrl;   // URL or path where the resume is stored
+    @Column(name = "upload_time")
     private LocalDateTime uploadTime;
 
 }
