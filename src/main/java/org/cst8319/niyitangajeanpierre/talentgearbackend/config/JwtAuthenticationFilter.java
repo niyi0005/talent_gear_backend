@@ -5,13 +5,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,9 +22,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
 
-
-
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -41,20 +34,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Validate token and username match
             if (jwtUtil.validateToken(token, username)) {
 
-                //Use CustomAuthenticationToken instead of UsernamePasswordAuthenticationToken since does not expose a setDetails() method
-//                CustomAuthenticationToken authentication = new CustomAuthenticationToken(
-//                        username, null // You can set authorities if needed
-//                );
+                // Create authentication object
                 Authentication authentication = customUserDetailsService.createJwtAuthentication(username);
 
-//                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null);
-
-
-                // Set details on the authentication object
-//                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 // Set the authentication context
-//                SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authentication));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
                 throw new BadCredentialsException("Invalid or expired token");
