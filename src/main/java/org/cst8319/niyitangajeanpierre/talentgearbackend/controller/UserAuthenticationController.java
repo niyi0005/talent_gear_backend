@@ -1,5 +1,6 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserLoginDto;
@@ -26,10 +27,11 @@ public class UserAuthenticationController {
     private final UserAuthenticationService userAuthenticationService;
 
 
+
     // Login endpoint
     @GetMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginDto userLoginDto) {
-        log.info("Login attempt");
+
         try {
             String jwt = userAuthenticationService.authenticateUser(userLoginDto);
 
@@ -41,8 +43,8 @@ public class UserAuthenticationController {
     }
 
     // Logout endpoint (client will discard the JWT token)
-    @PostMapping("/logout")
-    public String logout() {
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
         return "Logged out successfully";  // Client will discard the JWT token
     }
 

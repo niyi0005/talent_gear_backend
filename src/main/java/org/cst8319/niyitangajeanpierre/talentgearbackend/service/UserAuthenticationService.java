@@ -1,5 +1,6 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserLoginDto;
@@ -11,8 +12,11 @@ import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.RoleEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.UserEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.RoleRepository;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +39,6 @@ public class UserAuthenticationService {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
@@ -66,6 +69,7 @@ public class UserAuthenticationService {
             throw new BadCredentialsException("Authentication failed for user: " + userLoginDto.getUsername());
         }
     }
+
 
     public UserEntity createUser(@RequestBody UserRegisterDto userRegisterDto) {
         log.info("Register attempt user {}", userRegisterDto.getUsername());
