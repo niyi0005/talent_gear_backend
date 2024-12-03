@@ -38,8 +38,7 @@ public class SecurityConfig  {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth->auth
-//                        .requestMatchers("/**").hasRole("ADMIN")
+                .authorizeHttpRequests(auth->auth//
                         .requestMatchers("/login", "/register", "/users").permitAll()
                         .requestMatchers("/api/users/profile/{id}/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/jobs/**").hasAnyRole("EMPLOYER", "JOB_SEEKER")
@@ -47,6 +46,7 @@ public class SecurityConfig  {
                         .requestMatchers(HttpMethod.GET, "/api.resumes/**").hasAnyRole("EMPLOYER", "JOB_SEEKER")
                         .requestMatchers("/api/resumes/**").authenticated()
                         .requestMatchers("/api/messages/**").authenticated()
+                        .requestMatchers("/**").hasRole("ADMIN") // Should always come after other users
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions->exceptions
