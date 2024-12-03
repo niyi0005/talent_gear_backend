@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -25,31 +27,50 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        log.info(" request inside JWT Authentication Filter: {}", request);
 
         String token = extractJwtFromRequest(request);
+        log.debug("Token inside JwtAuthenticationFilter: {} ", token);
 
         if (StringUtils.hasText(token)) {
-            String username = jwtUtil.extractUsername(token);
 
-            // Validate token and username match
-            if (jwtUtil.validateToken(token, username)) {
+                try{
+                String username = jwtUtil.extractUsername(token);
+                log.info("Found username: {}", username);
 
-                // Create authentication object
-                Authentication authentication = customUserDetailsService.createJwtAuthentication(username);
+                // Validate token and username match
+                if (jwtUtil.validateToken(token, username)) {
 
-                // Set the authentication context
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                throw new BadCredentialsException("Invalid or expired token");
-            }
+                    // Create authentication object
+                    Authentication authentication = customUserDetailsService.createJwtAuthentication(username);
+
+                    // Set the authentication context
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info("Authentication successful for user: {}", username);
+                } else {
+                    throw new BadCredentialsException("Invalid or expired token");
+                }
+        } catch (BadCredentialsException e) {
+            log.error("Authentication failed: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Authentication failed: {}", e.getMessage());
+            throw new BadCredentialsException("Invalid JWT token", e);
         }
 
-        filterChain.doFilter(request, response); // Continue the filter chain
+        } else{
+            log.warn("No JWT token found in request");
+        }
+
+        // Continue the filter chain
+        filterChain.doFilter(request, response);
     }
+
 
     // Extracts JWT token from Authorization header
     private String extractJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
+        log.debug("Authorization header: {}", bearerToken); // Add debug log to check header contents
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7); // Extract token after "Bearer "
         }

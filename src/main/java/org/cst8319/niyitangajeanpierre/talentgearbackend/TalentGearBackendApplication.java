@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 @SpringBootApplication
 public class TalentGearBackendApplication {
 
+
     public static void main(String[] args) {
         SpringApplication.run(TalentGearBackendApplication.class, args);
     }

@@ -43,29 +43,32 @@ public class UserAuthenticationService {
     private final RoleRepository roleRepository;
 
     public String authenticateUser(@RequestBody UserLoginDto userLoginDto) {
+        log.debug("Login username inside service method: {}", userLoginDto.getUsername());
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(userLoginDto.getUsername());
+        log.debug("user details inside service method: {}", userDetails.getUsername());
+
 
         if(!userLoginDto.getUsername().equals(userDetails.getUsername())) {
             throw new BadCredentialsException("Invalid username");
         }
+
+        if (!bCryptPasswordEncoder.matches(userLoginDto.getPassword(), userDetails.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+        Authentication authentication = new JwtAuthentication(userDetails);
+        log.debug("Authenticated user: {}", authentication.getPrincipal());
+
         try {
 
-            if (!bCryptPasswordEncoder.matches(userLoginDto.getPassword(), userDetails.getPassword())) {
-                throw new BadCredentialsException("Invalid password");
-            }
 
-            Authentication authentication = new JwtAuthentication(userDetails);
-
-            log.info("Authenticated user:{} ", userDetails.getUsername());
 
             String token = jwtUtil.generateToken(authentication);
-            log.info("Generated token: {} ", token);
-            log.info("JWT token generated for user: {} ", userDetails.getUsername());
+            log.debug("Token inside service method: {}", token);
             return token;
 
         } catch (Exception e) {
             // Handle authentication failure
-            log.error("Authentication failed for user:{} ", userLoginDto.getUsername(), e);
+            log.error("Problem generating token", e);
             throw new BadCredentialsException("Authentication failed for user: " + userLoginDto.getUsername());
         }
     }
@@ -98,4 +101,20 @@ public class UserAuthenticationService {
         }
         return userRepository.save(newUser);
     }
+
+    public String registerAndAuthenticateUser(UserRegisterDto userRegisterDto) {
+        log.info("Inside registerAndAuthenticateUser");
+        // Register the user
+        UserEntity newUser = createUser(userRegisterDto);
+
+        // Create a UserLoginDto from the registration data
+        UserLoginDto userLoginDto = new UserLoginDto();
+        userLoginDto.setUsername(newUser.getUsername());
+        userLoginDto.setPassword(userRegisterDto.getPassword());
+
+        // Use the existing authenticateUser method
+        return authenticateUser(userLoginDto);
+    }
+
+
 }
