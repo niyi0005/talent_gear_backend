@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,5 +17,33 @@ public class UserService {
 
     public List<UserEntity> findAllUsers() {
         return userRepository.findAll();
+    }
+
+    public UserEntity getUserById(Long id) {
+        Optional<UserEntity> userEntity = userRepository.findById(id);
+        return userEntity.orElse(null);
+    }
+
+    public UserEntity createUser(UserEntity user) {
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public UserEntity editUser(Long id, UserEntity updatedUser) {
+        // Fetch the existing user
+        UserEntity existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update fields
+        existingUser.setBio(updatedUser.getBio());
+        existingUser.setAddress(updatedUser.getAddress());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setWebsite(updatedUser.getWebsite());
+
+        // Save and return the updated user
+        return userRepository.save(existingUser);
     }
 }
