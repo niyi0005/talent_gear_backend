@@ -6,39 +6,60 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Component
+@Slf4j
 public class JwtUtil {
 
-//    private String secretKey = "mySecretKey"; // Secret key to sign JWTs
-    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+//    private final String SECRET_KEY = "mySecretKey"; // Secret key to sign JWTs
+    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+//private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor("mySecretKey".getBytes());
+
 
     // Generate JWT token
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
+        log.debug("Authentication object {}:", authentication.getName());
 
         // Extract roles from the authentication object
         List<String> authorities = (authentication.getAuthorities() !=null) ?
                 authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)  // Convert to role names (e.g., "ROLE_JOB_SEEKER")
-                .collect(Collectors.toList())
+                        .map(GrantedAuthority::getAuthority)  // Convert to role names (e.g., "ROLE_JOB_SEEKER")
+                        .collect(Collectors.toList())
                 : List.of();
 
-        return Jwts.builder()
-                .setSubject(username)  // Subject is the username (can also include other user details)
-                .claim("authorities", authorities)  // Add authorities as a claim
-                .setIssuedAt(new Date())  // Issue time
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 ))  // One hour expiration
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)  // Signing the JWT token
-                .compact();
+        String token = null;
+        try {
+            token = Jwts.builder()
+                    .setSubject(username)  // Subject is the username (can also include other user details)
+                    .claim("authorities", authorities)  // Add authorities as a claim
+                    .setIssuedAt(new Date())  // Issue time
+                    .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 ))  // One hour expiration
+                    .signWith(SignatureAlgorithm.HS512, SECRET_KEY)  // Signing the JWT token
+                    .compact();
+            log.debug("Generated JWT token inside JwtUtil: {}", token);
+        } catch (JwtException e) {
+            log.error("Error generating JWT token", e);
+        } finally {
+            if (token != null) {
+                System.out.println("Generated JWT token: "+ token);
+            } else {
+                System.out.println("Failed to generate JWT token");
+            }
+        }
+        return token;
     }
 
     // Validate JWT token

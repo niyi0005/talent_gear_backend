@@ -1,6 +1,9 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.config;
 
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,12 +12,15 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+@Slf4j
 
 @RequiredArgsConstructor
 public class JwtAuthentication implements Authentication {
 
     private final UserDetails userDetails;
-    private boolean authenticated = false;
+    private final boolean authenticated=true;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -49,7 +55,10 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-        this.authenticated = isAuthenticated;
+        if (this.authenticated && !isAuthenticated) {
+            throw new IllegalArgumentException("Cannot set this token to trusted - use constructor instead.");
+        }
+        log.warn("Attempt to change authentication status ignored");
 
     }
 

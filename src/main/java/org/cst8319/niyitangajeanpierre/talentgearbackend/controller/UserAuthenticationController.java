@@ -23,17 +23,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class UserAuthenticationController {
 
-    @Autowired
+
     private final UserAuthenticationService userAuthenticationService;
 
 
 
     // Login endpoint
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginDto userLoginDto) {
-
+        log.debug("Login endpoint hit");
+        log.debug("Login username inside controller: {}", userLoginDto.getUsername());
         try {
             String jwt = userAuthenticationService.authenticateUser(userLoginDto);
+            log.debug("JWT inside the controller: {}", jwt);
 
             // Return a successful response with the JWT token
             return ResponseEntity.ok().body(jwt);
@@ -43,24 +45,38 @@ public class UserAuthenticationController {
     }
 
     // Logout endpoint (client will discard the JWT token)
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logout(HttpServletRequest request) {
         return "Logged out successfully";  // Client will discard the JWT token
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
+        log.debug("Register endpoint hit");
+        log.debug("Inside Controller: Registering user {}", userRegisterDto.getUsername());
         try {
-         UserEntity registeredUser = userAuthenticationService.createUser(userRegisterDto);
-
-         // Authenticate the user
-            UserLoginDto userLoginDto = new UserLoginDto();
-            userLoginDto.setUsername(registeredUser.getUsername());
-            userLoginDto.setPassword(registeredUser.getPassword());
-            String jwt = userAuthenticationService.authenticateUser(userLoginDto);
-         return ResponseEntity.status(HttpStatus.CREATED).body(jwt);
-        } catch (IllegalArgumentException e) {
+            String jwt = userAuthenticationService.registerAndAuthenticateUser(userRegisterDto);
+            log.debug("JWT token generated for new user {}", jwt);
+            return ResponseEntity.status(HttpStatus.CREATED).body(jwt);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(401).body("Registration failed: Invalid credentials");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while registering user");
         }
     }
+
+//    public ResponseEntity<?> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
+//        try {
+//         UserEntity registeredUser = userAuthenticationService.createUser(userRegisterDto);
+//
+//         // Authenticate the user
+//            UserLoginDto userLoginDto = new UserLoginDto();
+//            userLoginDto.setUsername(registeredUser.getUsername());
+//            userLoginDto.setPassword(registeredUser.getPassword());
+//            String jwt = userAuthenticationService.authenticateUser(userLoginDto);
+//         return ResponseEntity.status(HttpStatus.CREATED).body(jwt);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while registering user");
+//        }
+//    }
 }
