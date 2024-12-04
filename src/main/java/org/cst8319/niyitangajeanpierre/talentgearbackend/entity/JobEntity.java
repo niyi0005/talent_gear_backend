@@ -29,6 +29,9 @@ public class JobEntity {
     @JoinColumn(name = "employer_id") // The employer who posted the job
     private UserEntity employer;
 
+    @Transient  
+    private Long employerId; 
+
     @OneToMany(mappedBy = "job") // Refer to the 'job' field in ApplicationEntity
     private List<ApplicationEntity> applications;
 
