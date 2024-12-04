@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin("http://localhost:3000")
@@ -35,8 +36,8 @@ public class JobController {
 
     @PostMapping
     public JobEntity createJob(@RequestBody JobEntity jobEntity) {
-
-        return jobService.createJob(jobEntity);
+        Long employerId = jobEntity.getEmployerId(); 
+        return jobService.createJob(jobEntity, employerId); 
     }
 
     /*
