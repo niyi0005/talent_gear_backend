@@ -1,8 +1,9 @@
 import axios from "axios";
 
+const token = localStorage.getItem("authToken");
 const API_URL = "http://localhost:8080/api/jobs";
-const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDT01QQU5ZTUFOIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9FTVBMT1lFUiJdLCJpYXQiOjE3MzQwMzk3MzUsImV4cCI6MTczNDA0MzMzNX0.WSV-DSkkkkoL9lBWrB1DGQ8z8iq4n0Ibsi0tbeFkgwvDqTQRdEsED3uRLIBwC98FcJwVeZwdPInvgl-Bsk1Hrg";
-
+/* const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDT01QQU5ZTUFOIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9FTVBMT1lFUiJdLCJpYXQiOjE3MzQxODQxOTIsImV4cCI6MTczNDE4Nzc5Mn0.u9KF3JwF_t5eapXr42AMW3JWTqUaR1SjqzNQE1ol4r8jr_EUV5SRCE8EaZ8XpLTO2akfPDA393y60eA8Vznsug";
+ */
 export const getJobs = async () => {
   try {
     const response = await axios.get(API_URL, {

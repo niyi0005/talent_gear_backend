@@ -6,13 +6,15 @@ import HomePage from './HomePage';
 import EmployersPage from './EmployersPage';
 import NotFoundPage from './NotFoundPage';
 import JobsPage from './JobsPage';
+import LoginPage from './LoginPage';
 
-const App = () => {
+const PageRouter = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} /> 
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/employers" element={<EmployersPage />} />
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/*" element={<NotFoundPage />} />
@@ -21,4 +23,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default PageRouter;
