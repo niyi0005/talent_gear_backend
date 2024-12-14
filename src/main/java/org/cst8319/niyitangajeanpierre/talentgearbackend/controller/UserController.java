@@ -1,19 +1,27 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserUpdateDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.UserEntity;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.service.UserAuthenticationService;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@Slf4j
+@RequestMapping("api/users")
 public class UserController {
 
     private final UserService userService;
+    private final UserAuthenticationService userAuthenticationService;
 
     @GetMapping
     public ResponseEntity<List<UserEntity>> getAllUsers() {
@@ -32,18 +40,18 @@ public class UserController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity user) {
-        UserEntity createdUser = userService.createUser(user);
-        return ResponseEntity.ok(createdUser);
-    }
+    @PutMapping("/me")
+    public ResponseEntity<UserEntity> updateUser(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UserUpdateDto userUpdateDto){
+        log.debug("Update endpoint hit");
+        log.debug("Update username inside controller: {}", userDetails.getUsername());
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<UserEntity> updateUser(
-            @PathVariable Long userId,
-            @RequestBody UserEntity updatedUser) {
-        UserEntity editedUser = userService.editUser(userId, updatedUser);
-        return ResponseEntity.ok(editedUser);
+        try {
+            UserEntity updatedUser = userAuthenticationService.updateUser(userDetails, userUpdateDto);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
     @DeleteMapping("/{userId}")

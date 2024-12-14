@@ -42,13 +42,11 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/users").permitAll()
-                .requestMatchers("/api/users/profile/{id}/**").authenticated()
+                .requestMatchers("/login", "/register").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/users/me").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/**").hasAnyRole("EMPLOYER", "JOB_SEEKER")
                 .requestMatchers("/api/jobs/**").hasRole("EMPLOYER")
                 .requestMatchers(HttpMethod.GET, "/api/resumes/**").hasAnyRole("EMPLOYER", "JOB_SEEKER")
-                .requestMatchers("/api/resumes/**").authenticated()
-                .requestMatchers("/api/messages/**").authenticated()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions

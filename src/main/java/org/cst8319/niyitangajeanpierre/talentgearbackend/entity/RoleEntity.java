@@ -1,5 +1,6 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class RoleEntity {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
+    @JsonIgnore  // to prevent infinite recursion into users
     private Set<UserEntity> users;
 
     private String description;

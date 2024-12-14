@@ -32,16 +32,19 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UserEntity editUser(Long id, UserEntity updatedUser) {
+    public UserEntity editUser(String username, UserEntity updatedUser) {
         // Fetch the existing user
-        UserEntity existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity existingUser = userRepository.findByUsername(username);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
 
         // Update fields
         existingUser.setBio(updatedUser.getBio());
         existingUser.setAddress(updatedUser.getAddress());
         existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
         existingUser.setWebsite(updatedUser.getWebsite());
+        existingUser.setRoles(updatedUser.getRoles());
 
         // Save and return the updated user
         return userRepository.save(existingUser);

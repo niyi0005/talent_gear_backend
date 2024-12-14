@@ -5,18 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserLoginDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserRegisterDto;
-import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.UserEntity;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.UserRepository;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.service.UserAuthenticationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +20,8 @@ public class UserAuthenticationController {
 
 
     private final UserAuthenticationService userAuthenticationService;
-
+    private final UserService userService;
+    private final UserRepository userRepository;
 
 
     // Login endpoint
@@ -65,18 +61,5 @@ public class UserAuthenticationController {
         }
     }
 
-//    public ResponseEntity<?> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
-//        try {
-//         UserEntity registeredUser = userAuthenticationService.createUser(userRegisterDto);
-//
-//         // Authenticate the user
-//            UserLoginDto userLoginDto = new UserLoginDto();
-//            userLoginDto.setUsername(registeredUser.getUsername());
-//            userLoginDto.setPassword(registeredUser.getPassword());
-//            String jwt = userAuthenticationService.authenticateUser(userLoginDto);
-//         return ResponseEntity.status(HttpStatus.CREATED).body(jwt);
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while registering user");
-//        }
-//    }
+
 }

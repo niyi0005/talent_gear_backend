@@ -1,10 +1,10 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserLoginDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserRegisterDto;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserUpdateDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.config.CustomUserDetailsService;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.config.JwtAuthentication;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.config.JwtUtil;
@@ -12,11 +12,9 @@ import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.RoleEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.UserEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.RoleRepository;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.UserRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +26,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 
 
@@ -77,7 +76,32 @@ public class UserAuthenticationService {
     public UserEntity createUser(@RequestBody UserRegisterDto userRegisterDto) {
         log.info("Register attempt user {}", userRegisterDto.getUsername());
         log.info("Register attempt user {}", userRegisterDto.getPassword());
-        log.info("Register attempt user {}", userRegisterDto.getRoles());
+        log.info("Register attempt user with roles:  {}", userRegisterDto.getRoles());
+
+        // Check if username follow required format
+        if (!isValidUsername(userRegisterDto.getUsername())) {
+            log.debug("Invalid username. It should be at least three characters.");
+            throw new BadCredentialsException("Invalid username. It should be at least three characters.");
+        }
+
+        // Check if username already exists in the database
+        if (userRepository.existsByUsername(userRegisterDto.getUsername())) {
+            log.debug("Username {} already exists. Try a different username.", userRegisterDto.getUsername());
+            throw new IllegalArgumentException("Username already exists. Try a different username");
+        }
+
+        // Check if email follow required format
+        if (!isValidEmail(userRegisterDto.getEmail())) {
+            log.debug("Email {} does not follow the expected format", userRegisterDto.getEmail());
+            throw new BadCredentialsException("Email {} does not follow the expected format");
+        }
+
+        // Check if password follow required format
+        if (!isValidPassword(userRegisterDto.getPassword())) {
+            log.warn("Password {} does not follow the expected format", userRegisterDto.getPassword());
+            throw new BadCredentialsException("Password {} does not follow the expected format");
+        }
+
 
         // Create a new user entity
         UserEntity newUser = new UserEntity();
@@ -92,13 +116,17 @@ public class UserAuthenticationService {
         newUser.setCreatedAt(LocalDateTime.now());
 
         // Validate if the roles exist in the database
-        Optional<RoleEntity> optionalRoleEntity = roleRepository.findByName(userRegisterDto.getRoles());
-        if(optionalRoleEntity.isPresent()) {
-            RoleEntity roleEntity = optionalRoleEntity.get();
-            newUser.setRoles(new HashSet<>(Collections.singletonList(roleEntity)));
-        } else {
-            throw new IllegalArgumentException("Invalid role" + userRegisterDto.getRoles());
+        Set<RoleEntity> roles = new HashSet<>();
+        for (String roleName: userRegisterDto.getRoles()){
+            Optional<RoleEntity> optionalRoleEntity = roleRepository.findByName(roleName);
+            if(optionalRoleEntity.isPresent()) {
+                roles.add(optionalRoleEntity.get());
+            } else {
+                throw new IllegalArgumentException("Invalid role" + roleName);
+            }
+            newUser.setRoles(roles);
         }
+
         return userRepository.save(newUser);
     }
 
@@ -114,6 +142,68 @@ public class UserAuthenticationService {
 
         // Use the existing authenticateUser method
         return authenticateUser(userLoginDto);
+    }
+
+    public UserEntity updateUser(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UserUpdateDto userUpdateDto) {
+
+        // Get the authenticated user's username
+        String username = userDetails.getUsername();
+
+
+        // Fetch the existing user
+        UserEntity existingUser = userRepository.findByUsername(username);
+        if(existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        // Update fields
+        existingUser.setPhoneNumber(userUpdateDto.getPhoneNumber());
+        existingUser.setAddress(userUpdateDto.getAddress());
+        existingUser.setBio(userUpdateDto.getBio());
+        existingUser.setWebsite(userUpdateDto.getWebsite());
+        existingUser.setResumeUrl(userUpdateDto.getResumeUrl());
+
+        // Validate if the roles exist in the database
+        updateRoles(existingUser, userUpdateDto.getRoles());
+
+        // Save and return the updated user
+        return userRepository.save(existingUser);
+    }
+
+    private void updateRoles(UserEntity existingUser, Set<String> roles) {
+        Set<RoleEntity> roleEntities = new HashSet<>();
+        for (String roleName: roles) {
+            Optional<RoleEntity> optionalRoleEntity = roleRepository.findByName(roleName);
+            if (optionalRoleEntity.isPresent()) {
+                roleEntities.add(optionalRoleEntity.get());
+            } else {
+                throw new IllegalArgumentException("Invalid role" + roleName);
+            }
+        }
+        existingUser.setRoles(roleEntities);
+    }
+
+
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
+        Pattern emailPattern = Pattern.compile(emailRegex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = emailPattern.matcher(email);
+        return matcher.find();
+    }
+
+    private boolean isValidPassword(String password) {
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        Pattern passwordPattern = Pattern.compile(passwordRegex);
+        Matcher matcher = passwordPattern.matcher(password);
+        return matcher.find();
+    }
+
+    private boolean isValidUsername(String username) {
+        String usernameRegex = "^[a-zA-Z0-9_]{3,20}$";
+        Pattern usernamePattern = Pattern.compile(usernameRegex);
+        Matcher matcher = usernamePattern.matcher(username);
+        return matcher.find();
     }
 
 

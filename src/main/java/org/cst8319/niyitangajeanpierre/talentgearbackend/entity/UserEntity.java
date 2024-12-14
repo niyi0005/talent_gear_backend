@@ -1,8 +1,7 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,15 +24,8 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
-
-    @NotEmpty(message = "Username cannot be empty")
     private String username;
-
-    @NotEmpty(message = "Email cannot be empty")
-    @Email(message = "Invalid email format")
     private String email;
-
-    @NotEmpty(message = "Password cannot be empty")
     private String password;
 
     @ManyToMany
@@ -73,5 +65,6 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "sender")
     private List<MessageEntity> sentMessages;
+
 
 }
