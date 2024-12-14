@@ -2,6 +2,7 @@ package org.cst8319.niyitangajeanpierre.talentgearbackend.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.PasswordResetDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserLoginDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserRegisterDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.UserUpdateDto;
@@ -16,16 +17,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -40,7 +39,7 @@ public class UserAuthenticationService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
+    private final EmailService emailService;
     public String authenticateUser(@RequestBody UserLoginDto userLoginDto) {
         log.debug("Login username inside service method: {}", userLoginDto.getUsername());
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(userLoginDto.getUsername());
@@ -170,6 +169,56 @@ public class UserAuthenticationService {
         return userRepository.save(existingUser);
     }
 
+    // Method to Generate Password reset Token
+    public String generatePasswordResetToken(String username){
+        UserEntity user = userRepository.findByUsername(username);
+        if(user == null) {
+            throw new RuntimeException("User not found");
+        }
+        // Generate a random token
+        String token = UUID.randomUUID().toString();
+
+        // Store the token in the user entity
+        user.setPasswordResetToken(token);
+        user.setPasswordResetTokenExpirationDate(LocalDateTime.now().plusMinutes(30));
+        userRepository.save(user);
+        return token;
+    }
+
+    // Method to send the password reset email
+    public void sendPasswordResetEmail(String username, String token) {
+        UserEntity user = userRepository.findByUsername(username);
+        if (user == null){
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        String resetLink = "http://localhost:8080/reset-password?token=" + token + "&username=" + username;
+
+        // Send the email using SendGrid
+        emailService.sendSimpleMessage(user.getEmail(), "Password Reset Request", "Hello, To reset your password, please click on the following link: " + resetLink);
+    }
+
+    public void resetPassword(String token, String username, PasswordResetDto passwordResetDto) {
+        UserEntity user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        if (!user.getPasswordResetToken().equals(token) || user.getPasswordResetTokenExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Invalid or expired token");
+        }
+
+        // Update the user's password
+        if (isValidPassword(passwordResetDto.getNewPassword())) {
+            user.setPassword(bCryptPasswordEncoder.encode(passwordResetDto.getNewPassword()));
+            user.setPasswordResetToken(null);
+            user.setPasswordResetTokenExpirationDate(null);
+            userRepository.save(user);
+        }
+    }
+
+
+
     private void updateRoles(UserEntity existingUser, Set<String> roles) {
         Set<RoleEntity> roleEntities = new HashSet<>();
         for (String roleName: roles) {
@@ -192,7 +241,7 @@ public class UserAuthenticationService {
         return matcher.find();
     }
 
-    private boolean isValidPassword(String password) {
+    public boolean isValidPassword(String password) {
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         Pattern passwordPattern = Pattern.compile(passwordRegex);
         Matcher matcher = passwordPattern.matcher(password);

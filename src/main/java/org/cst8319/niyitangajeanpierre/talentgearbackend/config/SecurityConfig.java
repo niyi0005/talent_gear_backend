@@ -42,7 +42,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register").permitAll()
+                .requestMatchers("/login", "/register", "/forgot-password", "/reset-password/**").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/api/users/me").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/**").hasAnyRole("EMPLOYER", "JOB_SEEKER")
                 .requestMatchers("/api/jobs/**").hasRole("EMPLOYER")

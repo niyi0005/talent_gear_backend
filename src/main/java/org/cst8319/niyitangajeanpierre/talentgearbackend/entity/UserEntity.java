@@ -27,6 +27,11 @@ public class UserEntity {
     private String username;
     private String email;
     private String password;
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expiration_date")
+    private LocalDateTime passwordResetTokenExpirationDate;
 
     @ManyToMany
     @JoinTable(
