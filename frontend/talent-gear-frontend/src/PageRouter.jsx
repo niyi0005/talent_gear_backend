@@ -7,6 +7,7 @@ import EmployersPage from './EmployersPage';
 import NotFoundPage from './NotFoundPage';
 import JobsPage from './JobsPage';
 import LoginPage from './LoginPage';
+import RegisterPage from './RegisterPage';
 
 const PageRouter = () => {
   return (
@@ -15,6 +16,7 @@ const PageRouter = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} /> 
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/employers" element={<EmployersPage />} />
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/*" element={<NotFoundPage />} />

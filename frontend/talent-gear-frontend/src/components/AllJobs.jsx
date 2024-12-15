@@ -24,7 +24,7 @@ const AllJobs = () => {
   return (
     <div>
       <h2>Available Job Listings</h2>
-      {error && <p>{error}</p>} {/* Show error if any */}
+      {error && <p>{error}</p>}
       {jobs.length > 0 ? (
         <ul>
           {jobs.map((job) => (
