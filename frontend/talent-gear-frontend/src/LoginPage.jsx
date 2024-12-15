@@ -30,7 +30,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-page" style={{ minHeight: '100vh', width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f9fa' }}>
+    <div style={{ minHeight: '100vh', width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f9fa' }}>
       <div className="card p-4" style={{ width: '400px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
         <h2 className="text-center text-primary mb-4">Login</h2>
         <form onSubmit={handleSubmit}>
