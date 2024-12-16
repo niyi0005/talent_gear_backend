@@ -21,7 +21,7 @@ const RegisterPage = () => {
 
       if (response.status === 200 || response.status === 201) {
         console.log("Registration successful:", response.data);
-        // Optionally reset the form
+        // Reset the form
         setUsername("");
         setPassword("");
         setEmail("");
