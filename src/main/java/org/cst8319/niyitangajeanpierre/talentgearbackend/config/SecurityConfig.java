@@ -43,10 +43,19 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/register", "/forgot-password", "/reset-password/**").permitAll()
+                    // user should be authenticated to edit their profile
                 .requestMatchers(HttpMethod.PUT, "/api/users/me").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/jobs/**").hasAnyRole("EMPLOYER", "JOB_SEEKER")
-                .requestMatchers("/api/jobs/**").hasRole("EMPLOYER")
-                .requestMatchers(HttpMethod.GET, "/api/resumes/**").hasAnyRole("EMPLOYER", "JOB_SEEKER")
+                   // Employers are allowed POST, PUT, DELETE methods on jobs
+                .requestMatchers(HttpMethod.POST, "/api/jobs/**").hasRole("EMPLOYER")
+                .requestMatchers(HttpMethod.PUT, "/api/jobs/**").hasRole("EMPLOYER")
+                .requestMatchers(HttpMethod.DELETE, "/api/jobs/**").hasRole("EMPLOYER")
+                    // Job_seekers are allowed POST and PUT methods on resumes
+                .requestMatchers(HttpMethod.POST, "/api/resumes/**").hasRole("JOB_SEEKER")
+                .requestMatchers(HttpMethod.PUT, "/api/resumes/**").hasRole("JOB_SEEKER")
+                    // Job-seekers are allowed POST, PUT, DELETE methods on job application
+                .requestMatchers(HttpMethod.POST,"/api/applications/**").hasRole("JOB_SEEKER")
+                .requestMatchers(HttpMethod.PUT,"/api/applications/**").hasRole("JOB_SEEKER")
+                .requestMatchers(HttpMethod.DELETE,"/api/applications/**").hasRole("JOB_SEEKER")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions

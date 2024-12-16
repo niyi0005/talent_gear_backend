@@ -1,5 +1,6 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,21 +15,24 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="applications")
-public class ApplicationEntity {
+public class JobApplicationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "job_id")
+
+    @Column(name = "job_id")
     // References an id field in JobEntity
-    private JobEntity job;
+    private Long jobId;
 
-    @ManyToOne
-    @JoinColumn(name = "applicant_id")
-    private UserEntity applicant;  // User with Role.JOB_SEEKER
 
-    @JoinColumn(name = "application_date")
+    @Column(name = "applicant_id")
+    private Long applicantId;  // User with Role.JOB_SEEKER
+
+    @Lob
+    private String resumeContent;
+
+    @Column(name = "application_date")
     private LocalDate applicationDate;
 
     @Enumerated(EnumType.STRING)
@@ -36,6 +40,7 @@ public class ApplicationEntity {
 
     // Enum for Application Status
     public enum ApplicationStatus {
+        LIKED,
         PENDING,
         ACCEPTED,
         REJECTED,

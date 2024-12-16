@@ -1,5 +1,6 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,11 +30,9 @@ public class JobEntity {
     @JoinColumn(name = "employer_id") // The employer who posted the job
     private UserEntity employer;
 
-    @Transient  
-    private Long employerId; 
-
-    @OneToMany(mappedBy = "job") // Refer to the 'job' field in ApplicationEntity
-    private List<ApplicationEntity> applications;
+    @JsonIgnore  // to prevent infinite recursion into job application
+    @OneToMany(mappedBy = "jobId") // Refer to the 'jobId' field in ApplicationEntity
+    private List<JobApplicationEntity> applications;
 
     // Track the number of applications for this job
     @Transient  // This field is not stored in the database, but can be computed or tracked in the service layer

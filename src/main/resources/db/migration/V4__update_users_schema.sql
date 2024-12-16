@@ -48,7 +48,7 @@ CREATE TABLE resumes (
                          user_id BIGINT NOT NULL REFERENCES users(id),
                          file_name VARCHAR(255) NOT NULL,
                          file_url VARCHAR(255) NOT NULL,
-                         upload_time DATETIME DEFAULT CURRENT_TIMESTAMP
+                         upload_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE jobs (
@@ -71,7 +71,7 @@ CREATE TABLE applications (
                               job_id BIGINT NOT NULL REFERENCES jobs(id),
                               applicant_id BIGINT NOT NULL REFERENCES users(id),
                               application_date DATE NOT NULL,
-                              status ENUM('PENDING', 'ACCEPTED', 'REJECTED', 'DRAFT', 'SUBMITTED') NOT NULL
+                              status ENUM('LIKED', 'PENDING', 'ACCEPTED', 'REJECTED', 'DRAFT', 'SUBMITTED') NOT NULL
 );
 
 -- Create index on 'status' column of 'applications' table for faster querying
@@ -120,6 +120,38 @@ VALUES
 INSERT INTO users_roles (user_id, role_id)
 VALUES
     ((SELECT id FROM users WHERE username = 'jobSeekerUser'), (SELECT id FROM roles WHERE name = 'JOB_SEEKER'));
+
+
+-- insert jobs
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (2, 'Software Engineer', 'Develop and maintain web applications', 'Technology', 'San Francisco, CA', 120000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (2, 'Data Analyst', 'Analyze and interpret complex data sets', 'Finance', 'New York, NY', 85000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (8, 'Marketing Manager', 'Develop marketing strategies and campaigns', 'Marketing', 'Chicago, IL', 95000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (8, 'Graphic Designer', 'Create visual content for print and digital media', 'Design', 'Los Angeles, CA', 70000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (9, 'Project Manager', 'Oversee project timelines and deliverables', 'Construction', 'Dallas, TX', 105000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (10, 'Sales Representative', 'Generate leads and close sales', 'Retail', 'Atlanta, GA', 65000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (17, 'Human Resources Specialist', 'Manage employee relations and recruitment', 'Human Resources', 'Seattle, WA', 80000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (17, 'Mechanical Engineer', 'Design and develop mechanical systems', 'Engineering', 'Detroit, MI', 95000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (17, 'Cybersecurity Analyst', 'Monitor and secure IT infrastructure', 'Technology', 'Austin, TX', 115000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (17, 'Teacher', 'Instruct and guide students in academic subjects', 'Education', 'Boston, MA', 60000.00);
 
 
 
