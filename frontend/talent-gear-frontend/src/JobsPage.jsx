@@ -1,11 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import AllJobs from "./components/AllJobs";
-import LogoutButton from "./components/logout";
+import NavBar from "./components/NavBar";
 
 const JobsPage = () => {
   return (
     <div
+      className="container-fluid d-flex"
       style={{
+        flexDirection: "column",
         minHeight: "100vh",
         width: "100vw",
         display: "flex",
@@ -15,6 +17,7 @@ const JobsPage = () => {
         position: "relative",
       }}
     >
+      <NavBar />
       <div
         className="card p-4 bg-primary"
         style={{
@@ -26,16 +29,13 @@ const JobsPage = () => {
         <AllJobs />
       </div>
 
-      
       <div
         style={{
           position: "absolute",
           top: "10px",
           right: "20px",
         }}
-      >
-        <LogoutButton />
-      </div>
+      ></div>
     </div>
   );
 };
