@@ -40,6 +40,8 @@ public class UserAuthenticationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final EmailService emailService;
+
+
     public String authenticateUser(@RequestBody UserLoginDto userLoginDto) {
         log.debug("Login username inside service method: {}", userLoginDto.getUsername());
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(userLoginDto.getUsername());

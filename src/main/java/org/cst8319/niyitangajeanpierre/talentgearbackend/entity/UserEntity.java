@@ -1,11 +1,13 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -33,13 +35,12 @@ public class UserEntity {
     @Column(name = "password_reset_token_expiration_date")
     private LocalDateTime passwordResetTokenExpirationDate;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    @LazyCollection(LazyCollectionOption.FALSE)
     private Set<RoleEntity> roles;
 
     @Lob
@@ -53,22 +54,23 @@ public class UserEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "employer")
+    @JsonIgnore
+    @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY)
     // JobEntity has a employer field that references UserEntity foreign key.
     private List<JobEntity> postedJobs;
 
-    @OneToMany(mappedBy = "applicant")
-    // ApplicationEntity has an applicant field that references UserEntity foreign key.
-    private List<ApplicationEntity> applications;
+    @OneToMany(mappedBy = "applicantId", fetch = FetchType.LAZY)
+    // ApplicationEntity has an applicantId field that references UserEntity foreign key.
+    private List<JobApplicationEntity> applications;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     // ResumeEntity has a user field that references UserEntity foreign key.
     private ResumeEntity resume;
 
-    @OneToMany(mappedBy = "recipient")
+    @OneToMany(mappedBy = "recipient", fetch = FetchType.LAZY)
     private List<MessageEntity> receivedMessages;
 
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
     private List<MessageEntity> sentMessages;
 
 

@@ -36,7 +36,7 @@ public class JobController {
 
     @PostMapping
     public JobEntity createJob(@RequestBody JobEntity jobEntity) {
-        Long employerId = jobEntity.getEmployerId(); 
+        Long employerId = jobEntity.getEmployer() != null ? jobEntity.getEmployer().getId() : null;
         return jobService.createJob(jobEntity, employerId); 
     }
 
