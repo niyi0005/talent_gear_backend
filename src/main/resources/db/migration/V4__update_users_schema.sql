@@ -124,22 +124,22 @@ VALUES
 
 -- insert jobs
 INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
-VALUES (2, 'Software Engineer', 'Develop and maintain web applications', 'Technology', 'San Francisco, CA', 120000.00);
+VALUES (3, 'Software Engineer', 'Develop and maintain web applications', 'Technology', 'San Francisco, CA', 120000.00);
 
 INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
-VALUES (2, 'Data Analyst', 'Analyze and interpret complex data sets', 'Finance', 'New York, NY', 85000.00);
+VALUES (3, 'Data Analyst', 'Analyze and interpret complex data sets', 'Finance', 'New York, NY', 85000.00);
 
 INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
-VALUES (8, 'Marketing Manager', 'Develop marketing strategies and campaigns', 'Marketing', 'Chicago, IL', 95000.00);
+VALUES (3, 'Marketing Manager', 'Develop marketing strategies and campaigns', 'Marketing', 'Chicago, IL', 95000.00);
 
 INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
-VALUES (8, 'Graphic Designer', 'Create visual content for print and digital media', 'Design', 'Los Angeles, CA', 70000.00);
+VALUES (4, 'Graphic Designer', 'Create visual content for print and digital media', 'Design', 'Los Angeles, CA', 70000.00);
 
 INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
-VALUES (9, 'Project Manager', 'Oversee project timelines and deliverables', 'Construction', 'Dallas, TX', 105000.00);
+VALUES (4, 'Project Manager', 'Oversee project timelines and deliverables', 'Construction', 'Dallas, TX', 105000.00);
 
 INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
-VALUES (10, 'Sales Representative', 'Generate leads and close sales', 'Retail', 'Atlanta, GA', 65000.00);
+VALUES (15, 'Sales Representative', 'Generate leads and close sales', 'Retail', 'Atlanta, GA', 65000.00);
 
 INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
 VALUES (17, 'Human Resources Specialist', 'Manage employee relations and recruitment', 'Human Resources', 'Seattle, WA', 80000.00);
@@ -152,6 +152,74 @@ VALUES (17, 'Cybersecurity Analyst', 'Monitor and secure IT infrastructure', 'Te
 
 INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
 VALUES (17, 'Teacher', 'Instruct and guide students in academic subjects', 'Education', 'Boston, MA', 60000.00);
+
+-- More technology jobs
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (15, 'Frontend Developer', 'Build and optimize user interfaces', 'Technology', 'Seattle, WA', 110000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (15, 'DevOps Engineer', 'Automate infrastructure and deployments', 'Technology', 'Austin, TX', 125000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (17, 'UI/UX Designer', 'Design intuitive and attractive user experiences', 'Technology', 'New York, NY', 95000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (17, 'Cloud Engineer', 'Implement and manage cloud-based solutions', 'Technology', 'San Francisco, CA', 135000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (17, 'Full Stack Developer', 'Develop end-to-end software solutions', 'Technology', 'Denver, CO', 120000.00);
+
+-- More Finance jobs
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (3, 'Financial Advisor', 'Provide investment advice and planning', 'Finance', 'Chicago, IL', 85000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (3, 'Risk Analyst', 'Evaluate and mitigate financial risks', 'Finance', 'Houston, TX', 90000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (3, 'Accountant', 'Prepare financial statements and manage budgets', 'Finance', 'Phoenix, AZ', 75000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (3, 'Investment Analyst', 'Analyze market trends and investment opportunities', 'Finance', 'Boston, MA', 95000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (3, 'Loan Officer', 'Evaluate and approve loan applications', 'Finance', 'Miami, FL', 80000.00);
+
+-- More Engineering jobs
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (6, 'Civil Engineer', 'Design and oversee construction projects', 'Engineering', 'San Francisco, CA', 95000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (6, 'Electrical Engineer', 'Develop and test electrical systems', 'Engineering', 'Dallas, TX', 90000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (6, 'Structural Engineer', 'Analyze structural integrity of buildings', 'Engineering', 'Boston, MA', 92000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (6, 'Aerospace Engineer', 'Design aircraft and spacecraft systems', 'Engineering', 'Seattle, WA', 120000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (6, 'Biomedical Engineer', 'Develop medical devices and equipment', 'Engineering', 'Houston, TX', 88000.00);
+
+-- More Retails jobs
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (15, 'Store Manager', 'Oversee daily store operations', 'Retail', 'San Antonio, TX', 70000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (15, 'Visual Merchandiser', 'Design store layouts and product displays', 'Retail', 'Orlando, FL', 60000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (15, 'Customer Service Associate', 'Assist customers with purchases and queries', 'Retail', 'Las Vegas, NV', 45000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (15, 'Inventory Manager', 'Manage and optimize stock levels', 'Retail', 'Charlotte, NC', 65000.00);
+
+INSERT INTO jobs (employer_ID, name, description, industry, location, salary)
+VALUES (15, 'E-commerce Specialist', 'Manage online retail operations', 'Retail', 'Miami, FL', 70000.00);
+
+
 
 
 

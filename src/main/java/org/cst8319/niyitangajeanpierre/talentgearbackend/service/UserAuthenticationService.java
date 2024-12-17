@@ -195,6 +195,7 @@ public class UserAuthenticationService {
         }
 
         String resetLink = "http://localhost:8080/reset-password?token=" + token + "&username=" + username;
+        log.debug("Reset link: {}", resetLink);
 
         // Send the email using SendGrid
         emailService.sendSimpleMessage(user.getEmail(), "Password Reset Request", "Hello, To reset your password, please click on the following link: " + resetLink);
