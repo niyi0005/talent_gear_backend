@@ -1,8 +1,11 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.JobDto;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.JobSearchResponseDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.JobEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.service.JobService;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +59,20 @@ public class JobController {
     @RequestMapping(value = "/**", method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> handleOptions() {
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<JobSearchResponseDto>> searchJobs(
+                                   @RequestParam(required = false) String industry,
+                                   @RequestParam(required = false) String location,
+                                   @RequestParam(required = false) Double minSalary,
+                                   @RequestParam(required = false) Double maxSalary) {
+        try {
+            List<JobSearchResponseDto> jobs = jobService.searchJobs(industry, location, minSalary, maxSalary);
+            return ResponseEntity.ok(jobs);
+        }catch (RuntimeException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

@@ -1,27 +1,33 @@
 package org.cst8319.niyitangajeanpierre.talentgearbackend.service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import lombok.extern.slf4j.Slf4j;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.JobDto;
+import org.cst8319.niyitangajeanpierre.talentgearbackend.Dto.JobSearchResponseDto;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.JobEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.entity.UserEntity;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.JobRepository;
 import org.cst8319.niyitangajeanpierre.talentgearbackend.repository.UserRepository;
 
+import org.cst8319.niyitangajeanpierre.talentgearbackend.util.UtilMethods;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class JobService {
 
     private final JobRepository jobRepository;
 
     private final UserRepository userRepository;
+    private final UtilMethods utilMethods;
 
-    public JobService(JobRepository jobRepository, UserRepository userRepository) {
+    public JobService(JobRepository jobRepository, UserRepository userRepository, UtilMethods utilMethods) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
+        this.utilMethods = utilMethods;
     }
 
     /*
@@ -78,14 +84,66 @@ public class JobService {
 
     /* private JobEntity convertToEntity(JobDto jobDto, UserEntity employer) {
         JobEntity job = new JobEntity();
-        job.setId(jobDto.getId()); 
+        job.setId(jobDto.getId());
         job.setName(jobDto.getName());
         job.setDescription(jobDto.getDescription());
         job.setIndustry(jobDto.getIndustry());
         job.setLocation(jobDto.getLocation());
         job.setSalary(jobDto.getSalary());
-        job.setEmployer(employer); 
+        job.setEmployer(employer);
         return job;
     } */
+
+    public List<JobSearchResponseDto> searchJobs(String industry, String location, Double minSalary, Double maxSalary) {
+        log.debug("Searching jobs by industry {}, location {}, min salary {}, max salary {}", industry, location, minSalary, maxSalary);
+
+        List<JobEntity> jobs;
+
+        if (industry != null) {
+            jobs = jobRepository.findByIndustryContainingIgnoreCase(industry);
+            log.debug("Found {} jobs in {} industry", jobs.size(), industry);
+        } else if (location != null) {
+            // Accepts search by city or state. Eg: San Francisco or CA
+            jobs = jobRepository.findByLocationContainingIgnoreCase(location);
+            log.debug("Found {} jobs in {} location", jobs.size(), location);
+        } else if (minSalary != null) {
+            jobs = jobRepository.findBySalaryGreaterThanEqual(minSalary);
+            log.debug("Found {} jobs with salary above {} ", jobs.size(), minSalary);
+        } else if (maxSalary != null) {
+            jobs = jobRepository.findBySalaryLessThanEqual(maxSalary);
+            log.debug("Found {} jobs with salary below {} ", jobs.size(), maxSalary);
+        } else {
+            throw new RuntimeException("At least one parameter must be provided");
+        }
+
+
+
+       jobs = applyFilters(jobs, industry, location, minSalary, maxSalary);
+
+        log.debug("Found {} jobs", jobs.size());
+
+        // Convert JobEntity list to JobSearchResponseDto list
+        return utilMethods.mapToDtoList(jobs);
+    }
+
+    // Filter results as params are applied
+    private List<JobEntity> applyFilters(List<JobEntity> jobs, String industry, String location, Double minSalary, Double maxSalary) {
+        Stream<JobEntity> filteredJobs = jobs.stream();
+        if (industry != null) {
+            filteredJobs = filteredJobs.filter(job -> job.getIndustry().toLowerCase().contains(industry.toLowerCase()));
+        }
+        if (location != null) {
+            filteredJobs = filteredJobs.filter(job -> job.getLocation().toLowerCase().contains(location.toLowerCase()));
+        }
+        if (minSalary != null) {
+            filteredJobs = filteredJobs.filter(job -> job.getSalary() >= minSalary);
+        }
+        if (maxSalary != null) {
+            filteredJobs = filteredJobs.filter(job -> job.getSalary() <= maxSalary);
+        }
+        List<JobEntity> filteredJobList = filteredJobs.toList();
+        log.debug("Jobs filtered: {}", filteredJobList);
+        return filteredJobList;
+    }
 
 }
