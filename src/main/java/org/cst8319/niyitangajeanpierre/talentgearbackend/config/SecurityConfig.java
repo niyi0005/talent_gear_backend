@@ -45,17 +45,21 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/register", "/forgot-password", "/reset-password/**").permitAll()
                     // user should be authenticated to edit their profile
                 .requestMatchers(HttpMethod.PUT, "/api/users/me").authenticated()
-                   // Employers are allowed POST, PUT, DELETE methods on jobs
+                   // POST, PUT, DELETE methods on jobs exclusive to employers
                 .requestMatchers(HttpMethod.POST, "/api/jobs/**").hasRole("EMPLOYER")
                 .requestMatchers(HttpMethod.PUT, "/api/jobs/**").hasRole("EMPLOYER")
                 .requestMatchers(HttpMethod.DELETE, "/api/jobs/**").hasRole("EMPLOYER")
-                    // Job_seekers are allowed POST and PUT methods on resumes
+                .requestMatchers(HttpMethod.GET, "/api/jobs/search/**").permitAll()
+                    // POST, PUT, DELETE methods on resumes exclusive to job_seekers
                 .requestMatchers(HttpMethod.POST, "/api/resumes/**").hasRole("JOB_SEEKER")
                 .requestMatchers(HttpMethod.PUT, "/api/resumes/**").hasRole("JOB_SEEKER")
-                    // Job-seekers are allowed POST, PUT, DELETE methods on job application
+                .requestMatchers(HttpMethod.DELETE, "/api/resumes/**").hasRole("JOB_SEEKER")
+                .requestMatchers(HttpMethod.GET, "/api/resumes/**").hasAnyRole("JOB_SEEKER", "EMPLOYER")
+                    // POST, PUT, DELETE methods on job application exclusive to job_seekers
                 .requestMatchers(HttpMethod.POST,"/api/applications/**").hasRole("JOB_SEEKER")
                 .requestMatchers(HttpMethod.PUT,"/api/applications/**").hasRole("JOB_SEEKER")
                 .requestMatchers(HttpMethod.DELETE,"/api/applications/**").hasRole("JOB_SEEKER")
+                .requestMatchers(HttpMethod.GET,"/api/applications/**").hasAnyRole("JOB_SEEKER", "EMPLOYER")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions

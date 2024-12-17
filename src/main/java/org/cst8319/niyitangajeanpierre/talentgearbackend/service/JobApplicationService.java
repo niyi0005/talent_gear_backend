@@ -25,9 +25,10 @@ public class JobApplicationService {
 
 
     public JobApplicationEntity applyForJob(Long jobId) {
+        // Get the logged-in user's username
         String username = utilMethods.getLoggedInUsername();
 
-        // Get the ID of the logged in user from the database
+        // Get logged-in user's ID from the database
         UserEntity user = userRepository.findByUsername(username);
         if (user == null) {
             throw new RuntimeException("User not found");
@@ -45,6 +46,7 @@ public class JobApplicationService {
         JobApplicationEntity jobApplication = new JobApplicationEntity();
         jobApplication.setJobId(job.getId());
         jobApplication.setApplicantId(user.getId());
+        jobApplication.setResumeContent(user.getResume().getFileUrl());
         jobApplication.setApplicationDate(LocalDate.now());
         jobApplication.setStatus(JobApplicationEntity.ApplicationStatus.SUBMITTED);
 
@@ -53,10 +55,17 @@ public class JobApplicationService {
     }
 
     public List<JobApplicationEntity> getApplicationsByJobId(Long jobId) {
+        // Get the logged-in user's username
         String loggedInUsername = utilMethods.getLoggedInUsername();
+
+        // Get logged-in user's ID from the database
         UserEntity user = userRepository.findByUsername(loggedInUsername);
         if (user == null) {
             throw new RuntimeException("User not found");
+        }
+        // Check if the logged-in user has the employer role
+        if (!utilMethods.hasEmployerRole(user)) {
+            throw new RuntimeException("User does not have the employer role");
         }
 
         // Check if the job exists and belongs to the logged-in user
@@ -65,8 +74,6 @@ public class JobApplicationService {
 
         return jobApplicationRepository.findByJobId(jobId);
     }
-
-
 
 
 }
