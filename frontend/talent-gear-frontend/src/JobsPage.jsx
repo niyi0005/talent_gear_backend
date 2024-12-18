@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles/homepage.css";
 import AllJobs from "./components/AllJobs";
 import NavBar from "./components/NavBar";
 

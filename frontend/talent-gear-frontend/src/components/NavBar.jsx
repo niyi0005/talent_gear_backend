@@ -15,58 +15,65 @@ const NavBar = () => {
   };
 
   return (
-    <nav
-      className="navbar navbar-expand-lg bg-primary"
-      style={{
-        padding: "10px 20px",
-      }}
-    >
-      <div className="container-fluid d-flex justify-content-between align-items-center">
-        <div className="d-flex">
-          <Link to="/home" className="nav-link text-white mx-2">
-            Home
+    <div className="w-100">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div className="container-fluid d-flex justify-content-between">
+          <Link to="/home" className="navbar-brand">
+            Talent Gear
           </Link>
-          <Link to="/jobs" className="nav-link text-white mx-2">
-            Jobs
-          </Link>
-          <Link to="/employers" className="nav-link text-white mx-2">
-            Employers
-          </Link>
-        </div>
 
-        <Link
-          to="/"
-          className="navbar-brand text-white flex-grow-1 text-center"
-        >
-          <h1 className="display-4">Talent Gear</h1>
-        </Link>
+          <div className="d-flex align-items-center">
+            <Link to="/jobs" className="nav-link text-white mx-2">
+              Jobs
+            </Link>
 
-        <div className="d-flex">
-          {!isAuthenticated ? (
-            <>
-              <Link to="/login" className="nav-link text-white mx-2">
-                Login
-              </Link>
-              <Link to="/register" className="nav-link text-white mx-2">
-                Register
-              </Link>
-            </>
-          ) : (
-            <button
-              className="nav-link text-white mx-2"
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-              }}
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          )}
+            <div
+              className="border-start border-light mx-2"
+              style={{ height: "24px" }}
+            ></div>
+
+            <Link to="/employers" className="nav-link text-white mx-2">
+              Employers
+            </Link>
+
+            {!isAuthenticated ? (
+              <>
+                <div
+                  className="border-start border-light mx-2"
+                  style={{ height: "24px" }}
+                ></div>
+                <Link to="/login" className="nav-link text-white mx-2">
+                  Login
+                </Link>
+
+                <div
+                  className="border-start border-light mx-2"
+                  style={{ height: "24px" }}
+                ></div>
+
+                <Link to="/register" className="nav-link text-white mx-2">
+                  Register
+                </Link>
+              </>
+            ) : (
+              <>
+                <div
+                  className="border-start border-light mx-2"
+                  style={{ height: "24px" }}
+                ></div>
+
+                <button
+                  className="nav-link btn text-white mx-2"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 };
 
