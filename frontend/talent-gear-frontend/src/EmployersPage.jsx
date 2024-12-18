@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import LogoutButton from "./components/logout";
+import NavBar from "./components/NavBar";
 
 const EmployersPage = () => {
   const token = localStorage.getItem("authToken");
@@ -10,7 +10,6 @@ const EmployersPage = () => {
   }
 
   return (
-    
     <div className="container py-5">
       <div
         style={{
@@ -19,11 +18,10 @@ const EmployersPage = () => {
           right: "20px",
         }}
       >
-        <LogoutButton />
+        <NavBar />
       </div>
       <h1>For Employers</h1>
       <p>Manage job postings and find the best talent.</p>
-      
     </div>
   );
 };
